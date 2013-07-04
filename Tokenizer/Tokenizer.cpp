@@ -1,37 +1,114 @@
 #include "Tokenizer.h"
-
+#include <sstream>
 
 namespace Interpeter
 {
 	namespace Tokenizer
 	{
 		
-		TOKENIZER_STATUS tokenizer(char *path)
-		{
-			ifstream sourceFile;
-			char * source;
-			ifstream::pos_type size;
-			sourceFile.open(path, ios::in|ios::binary|ios::ate);
-			if(sourceFile.is_open())
-			{
-				size = sourceFile.tellg();
-				source = new char [(int)size + 1];
-				sourceFile.seekg(0, ios::beg);
-				sourceFile.read(source, size);
-				sourceFile.close();
-				return readSource(source);
-			}
-			else
-				return TE1;
-		}
-
 		Token::Token(TOKEN_TYPE type, string value)
 		{
 			this->_type = type;
 			this->_value = value;
 		}
+		string Token::print()
+		{
+			string tmp = "Token : ";
+			switch(this->_type)
+			{
+			case TOKEN_WORLD:
+				tmp += "TOKEN_WORLD";
+				tmp += " = " + this->_value;
+				break;
+			case TOKEN_METHOD_OPEN:
+				tmp += "TOKEN_METHOD_OPEN";
+				break;
+			case TOKEN_METHOD_CLOSE:
+				tmp += "TOKEN_METHOD_CLOSE";
+				break;
+			case TOKEN_SCOPE_OPEN:
+				tmp += "TOKEN_SCOPE_OPEN";
+				break;
+			case TOKEN_SCOPE_CLOSE:
+				tmp += "TOKEN_SCOPE_CLOSE";
+				break;
+			case TOKEN_ASSIGNMENT:
+				tmp += "TOKEN_ASSIGNMENT";
+				break;
+			case TOKEN_TERMINATOR:
+				tmp += "TOKEN_TERMINATOR";
+				break;
+			case TOKEN_OPERATOR:
+				tmp += "TOKEN_OPERATOR";
+				break;
+			case TOKEN_STRING:
+				tmp += "TOKEN_STRING";
+				tmp += " = '" + this->_value + "'";
+				break;
+			}
+			return tmp;
+		}
+		string Token::simulate()
+		{
+			string tmp;
+			switch(this->_type)
+			{
+			case TOKEN_WORLD:
+				tmp += this->_value;
+				break;
+			case TOKEN_METHOD_OPEN:
+				tmp += "(";
+				break;
+			case TOKEN_METHOD_CLOSE:
+				tmp += ")";
+				break;
+			case TOKEN_SCOPE_OPEN:
+				tmp += "\n{";
+				break;
+			case TOKEN_SCOPE_CLOSE:
+				tmp += "}\n";
+				break;
+			case TOKEN_ASSIGNMENT:
+				tmp += " = ";
+				break;
+			case TOKEN_TERMINATOR:
+				tmp += "\n";
+				break;
+			case TOKEN_OPERATOR:
+				tmp += this->_value;
+				break;
+			case TOKEN_STRING:
+				tmp += " = '" + this->_value + "'";
+				break;
+			}
+			return tmp;
+		}
 
-		TOKENIZER_STATUS readSource(char *source)
+
+
+
+		TOKENIZER_STATUS tokenizer(char *path, vector<Token> *tokenList)
+		{
+			
+			ifstream sourceFile(path);
+			
+			stringstream buffer;
+			string source;
+
+			ifstream::pos_type size;
+			if(sourceFile.is_open())
+			{
+				buffer << sourceFile.rdbuf();
+				source = string(buffer.str());
+				source += " ";
+				sourceFile.close();
+				return readSource(source, tokenList);
+			}
+			else
+				return TE1;
+		}
+
+		TOKENIZER_STATUS readSource(string &source, vector<Token> *tokenList)
 		{
 			bool inlineComment = false,
 				comment = false,
@@ -40,11 +117,26 @@ namespace Interpeter
 			
 			string world = "";
 			
-			vector<Token> tokenList;
 
-			for(unsigned long i = 0; i < strlen(source); i++)
+			unsigned long souceLen = source.length() - 1;
+
+			
+
+			for(unsigned long i = 0; i < souceLen; i++)
 			{
-				if(inlineComment)
+				if(inString)
+				{
+					if(	source[i] == '"' || source[i] == '\'' )
+					{
+						inString = false;
+						tokenList->push_back(Token(TOKEN_STRING,world));
+						world = "";
+					}
+					else
+						world += source[i];
+
+				}
+				else if(inlineComment)
 				{
 					if(	source[i] == '\n' )
 						inlineComment = false;
@@ -56,7 +148,7 @@ namespace Interpeter
 				}
 				else if(!writeWord)
 				{
-					if(	source[i] == ' ' )
+					if(	source[i] == ' ' || source[i] == '\t' )
 						continue;
 					if( (source[i] >= 'a' && source[i] <= 'z') || (source[i] >= 'A' && source[i] <= 'Z') || (source[i] >= '0' && source[i] <= '9') )
 					{
@@ -65,27 +157,32 @@ namespace Interpeter
 					}
 					else if( source[i] == '(')
 					{
-						tokenList.push_back(Token(TOKEN_METHOD_OPEN, ""));
+						tokenList->push_back(Token(TOKEN_METHOD_OPEN, ""));
 					}
 					else if( source[i] == ')')
 					{
-						tokenList.push_back(Token(TOKEN_METHOD_CLOSE, ""));
+						tokenList->push_back(Token(TOKEN_METHOD_CLOSE, ""));
 					}
 					else if( source[i] == '{')
 					{
-						tokenList.push_back(Token(TOKEN_SCOPE_OPEN, ""));
+						tokenList->push_back(Token(TOKEN_SCOPE_OPEN, ""));
 					}
 					else if( source[i] == '}')
 					{
-						tokenList.push_back(Token(TOKEN_SCOPE_CLOSE, ""));
+						tokenList->push_back(Token(TOKEN_SCOPE_CLOSE, ""));
 					}
 					else if( source[i] == '=')
 					{
-						tokenList.push_back(Token(TOKEN_ASSIGNMENT, ""));
+						tokenList->push_back(Token(TOKEN_ASSIGNMENT, ""));
 					}
 					else if( source[i] == ';' ||  source[i] == '\n')
 					{
-						tokenList.push_back(Token(TOKEN_TERMINATOR, ""));
+						tokenList->push_back(Token(TOKEN_TERMINATOR, ""));
+					}
+					else if( source[i] == '\r' &&  source[i + 1] == '\n')
+					{
+						tokenList->push_back(Token(TOKEN_TERMINATOR, ""));
+						i++;
 					}
 					else if( source[i] == '/' && source[i+1] == '/')
 					{
@@ -97,7 +194,11 @@ namespace Interpeter
 					}
 					else if( source[i] == '/' || source[i] == '*' || source[i] == '+' || source[i] == '-')
 					{
-						tokenList.push_back(Token(TOKEN_OPERATOR, &source[i]));
+						tokenList->push_back(Token(TOKEN_OPERATOR, &source[i]));
+					}
+					else if( source[i] == '"' || source[i] == '\'' )
+					{
+						inString = true;
 					}
 					else
 						return TE2;	//	Character not accepted
@@ -110,35 +211,40 @@ namespace Interpeter
 					}
 					else
 					{
-						tokenList.push_back(Token(TOKEN_WORLD,world));
+						tokenList->push_back(Token(TOKEN_WORLD,world));
 						world = "";
 						writeWord = false;
 
-						if(	source[i] == ' ' )
+						if(	source[i] == ' ' || source[i] == '\t' )
 							continue;
 						else if( source[i] == '(')
 						{
-							tokenList.push_back(Token(TOKEN_METHOD_OPEN, ""));
+							tokenList->push_back(Token(TOKEN_METHOD_OPEN, ""));
 						}
 						else if( source[i] == ')')
 						{
-							tokenList.push_back(Token(TOKEN_METHOD_CLOSE, ""));
+							tokenList->push_back(Token(TOKEN_METHOD_CLOSE, ""));
 						}
 						else if( source[i] == '{')
 						{
-							tokenList.push_back(Token(TOKEN_SCOPE_OPEN, ""));
+							tokenList->push_back(Token(TOKEN_SCOPE_OPEN, ""));
 						}
 						else if( source[i] == '}')
 						{
-							tokenList.push_back(Token(TOKEN_SCOPE_CLOSE, ""));
+							tokenList->push_back(Token(TOKEN_SCOPE_CLOSE, ""));
 						}
 						else if( source[i] == '=')
 						{
-							tokenList.push_back(Token(TOKEN_ASSIGNMENT, ""));
+							tokenList->push_back(Token(TOKEN_ASSIGNMENT, ""));
 						}
 						else if( source[i] == ';' ||  source[i] == '\n')
 						{
-							tokenList.push_back(Token(TOKEN_TERMINATOR, ""));
+							tokenList->push_back(Token(TOKEN_TERMINATOR, ""));
+						}
+						else if( source[i] == '\r' &&  source[i + 1] == '\n')
+						{
+							tokenList->push_back(Token(TOKEN_TERMINATOR, ""));
+							i++;
 						}
 						else if( source[i] == '/' && source[i+1] == '/')
 						{
@@ -150,7 +256,11 @@ namespace Interpeter
 						}
 						else if( source[i] == '/' || source[i] == '*' || source[i] == '+' || source[i] == '-')
 						{
-							tokenList.push_back(Token(TOKEN_OPERATOR, &source[i]));
+							tokenList->push_back(Token(TOKEN_OPERATOR, &source[i]));
+						}
+						else if( source[i] == '"' || source[i] == '\'' )
+						{
+							inString = true;
 						}
 						else
 							return TE2;	//	Character not accepted
