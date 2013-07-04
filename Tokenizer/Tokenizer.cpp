@@ -1,6 +1,4 @@
 #include "Tokenizer.h"
-#include <sstream>
-
 namespace Interpeter
 {
 	namespace Tokenizer

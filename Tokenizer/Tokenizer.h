@@ -2,7 +2,8 @@
 
 #include <iostream>
 #include <fstream>
-#include <regex>
+#include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -20,8 +21,9 @@ namespace Interpeter
 			TOKEN_ASSIGNMENT,		//	=
 			TOKEN_TERMINATOR,		//	\n ;
 			TOKEN_OPERATOR,			// + - * /
-			TOKEN_STRING,	// ' "
+			TOKEN_STRING,			// ' "
 		};
+
 
 		class Token
 		{

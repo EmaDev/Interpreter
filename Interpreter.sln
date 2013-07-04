@@ -5,6 +5,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Interpreter", "Interpreter\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tokenizer", "Tokenizer\Tokenizer.vcxproj", "{F9FB362A-FCBA-40D8-A07D-5697E9FA17D9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SyntaxChecker", "SyntaxChecker\SyntaxChecker.vcxproj", "{A6CE3399-EE6D-44C0-9A47-18633AEA23AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -19,6 +21,10 @@ Global
 		{F9FB362A-FCBA-40D8-A07D-5697E9FA17D9}.Debug|Win32.Build.0 = Debug|Win32
 		{F9FB362A-FCBA-40D8-A07D-5697E9FA17D9}.Release|Win32.ActiveCfg = Release|Win32
 		{F9FB362A-FCBA-40D8-A07D-5697E9FA17D9}.Release|Win32.Build.0 = Release|Win32
+		{A6CE3399-EE6D-44C0-9A47-18633AEA23AE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A6CE3399-EE6D-44C0-9A47-18633AEA23AE}.Debug|Win32.Build.0 = Debug|Win32
+		{A6CE3399-EE6D-44C0-9A47-18633AEA23AE}.Release|Win32.ActiveCfg = Release|Win32
+		{A6CE3399-EE6D-44C0-9A47-18633AEA23AE}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
