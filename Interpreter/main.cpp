@@ -15,7 +15,7 @@ int main(int argc, char ** argv, char **envv)
 		case TE0:
 			break;
 		case TE1:
-			cout<<"Source code not exist";
+			cout<<"Source code dosn't exist";
 			return false;
 			break;
 		case TE2:
