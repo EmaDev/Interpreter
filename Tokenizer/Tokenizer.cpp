@@ -67,7 +67,7 @@ namespace Interpeter
 				tmp += "}\n";
 				break;
 			case TOKEN_ASSIGNMENT:
-				tmp += " = ";
+				tmp += "=";
 				break;
 			case TOKEN_TERMINATOR:
 				tmp += "\n";
@@ -76,7 +76,7 @@ namespace Interpeter
 				tmp += this->_value;
 				break;
 			case TOKEN_STRING:
-				tmp += " = '" + this->_value + "'";
+				tmp += "'" + this->_value + "'";
 				break;
 			}
 			return tmp;
@@ -192,7 +192,7 @@ namespace Interpeter
 					}
 					else if( source[i] == '/' || source[i] == '*' || source[i] == '+' || source[i] == '-')
 					{
-						tokenList->push_back(Token(TOKEN_OPERATOR, &source[i]));
+						tokenList->push_back(Token(TOKEN_OPERATOR, source.substr(i,1)));
 					}
 					else if( source[i] == '"' || source[i] == '\'' )
 					{
@@ -254,7 +254,7 @@ namespace Interpeter
 						}
 						else if( source[i] == '/' || source[i] == '*' || source[i] == '+' || source[i] == '-')
 						{
-							tokenList->push_back(Token(TOKEN_OPERATOR, &source[i]));
+							tokenList->push_back(Token(TOKEN_OPERATOR, source.substr(i,1)));
 						}
 						else if( source[i] == '"' || source[i] == '\'' )
 						{
