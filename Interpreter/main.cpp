@@ -9,6 +9,7 @@ using namespace SyntaxChecker;
 
 int main(int argc, char ** argv, char **envv)
 {
+
 	vector<Token> tokenList;
 	if(argc != 2)
 	{

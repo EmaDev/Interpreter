@@ -12,11 +12,17 @@ namespace Interpeter
 		{
 			unsigned i, j;
 
-			bool newInstruction = true;
+			bool newInstruction = true,
+				lastWord = false;
+
 
 			for(i = 0; i < tokenList->size(); i++)
 			{
 				if(tokenList->at(i).type() == TOKEN_WORD)
+				{
+					//if(
+				}
+				else if(tokenList->at(i).type() == TOKEN_TERMINATOR)
 				{
 					
 				}
