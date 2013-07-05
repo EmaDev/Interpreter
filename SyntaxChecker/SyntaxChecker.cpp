@@ -1,23 +1,25 @@
 #include "SyntaxChecker.h"
+#include "Tokenizer.h"
 
 namespace Interpeter
 {
 	namespace SyntaxChecker
 	{
 
-		char *keywords[] = {
-			"if",
-			"end",
-			"while",
-			"for",
-			"import"
-		};
+		
 
 		SYNTAX_STATUS syntaxChecker(vector<Token> *tokenList)
 		{
-			for(unsigned i = 0; i < tokenList->size(); i++)
+			unsigned i, j;
+
+			bool newInstruction = true;
+
+			for(i = 0; i < tokenList->size(); i++)
 			{
-				
+				if(tokenList->at(i).type() == TOKEN_WORD)
+				{
+					
+				}
 			}
 			return SE0;
 		}

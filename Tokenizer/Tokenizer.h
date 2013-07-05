@@ -13,7 +13,8 @@ namespace Interpeter
 	{
 
 		enum TOKEN_TYPE {
-			TOKEN_WORLD,			//	nome
+			TOKEN_WORD,				//	nome
+			TOKEN_KEYWORD,			//	if end while
 			TOKEN_METHOD_OPEN,		//	(
 			TOKEN_METHOD_CLOSE,		//	)
 			TOKEN_SCOPE_OPEN,		//	{
@@ -21,8 +22,9 @@ namespace Interpeter
 			TOKEN_ASSIGNMENT,		//	=
 			TOKEN_TERMINATOR,		//	\n ;
 			TOKEN_OPERATOR,			// + - * /
-			TOKEN_STRING,			// ' "
+			TOKEN_STRING			// ' "
 		};
+
 
 
 		class Token
@@ -31,6 +33,8 @@ namespace Interpeter
 			Token(TOKEN_TYPE type, string value);
 			string print();
 			string simulate();
+			TOKEN_TYPE type();
+			string val();
 		private:
 			TOKEN_TYPE _type;
 			string _value;

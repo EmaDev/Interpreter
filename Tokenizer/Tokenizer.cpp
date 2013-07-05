@@ -3,19 +3,32 @@ namespace Interpeter
 {
 	namespace Tokenizer
 	{
+
+
+
+
 		
 		Token::Token(TOKEN_TYPE type, string value)
 		{
 			this->_type = type;
 			this->_value = value;
 		}
+		TOKEN_TYPE Token::type()
+		{
+			return this->_type;
+		}
+		string Token::val()
+		{
+			return this->_value;
+		}
+
 		string Token::print()
 		{
 			string tmp = "Token : ";
 			switch(this->_type)
 			{
-			case TOKEN_WORLD:
-				tmp += "TOKEN_WORLD";
+			case TOKEN_WORD:
+				tmp += "TOKEN_WORD";
 				tmp += " = " + this->_value;
 				break;
 			case TOKEN_METHOD_OPEN:
@@ -51,7 +64,7 @@ namespace Interpeter
 			string tmp;
 			switch(this->_type)
 			{
-			case TOKEN_WORLD:
+			case TOKEN_WORD:
 				tmp += this->_value;
 				break;
 			case TOKEN_METHOD_OPEN:
@@ -106,6 +119,15 @@ namespace Interpeter
 				return TE1;
 		}
 
+		char *keywords[] = {
+			"if",
+			"end",
+			"while",
+			"for",
+			"import"
+		};
+
+
 		TOKENIZER_STATUS readSource(string &source, vector<Token> *tokenList)
 		{
 			bool inlineComment = false,
@@ -113,14 +135,15 @@ namespace Interpeter
 				writeWord = false,
 				inString = false;
 			
+			unsigned i, j, keywordsLen, souceLen;
+
+			keywordsLen = sizeof(keywords) / sizeof(keywords[0]);
+			souceLen = source.length() - 1;
+			
 			string world = "";
 			
 
-			unsigned long souceLen = source.length() - 1;
-
-			
-
-			for(unsigned long i = 0; i < souceLen; i++)
+			for(i = 0; i < souceLen; i++)
 			{
 				if(inString)
 				{
@@ -209,7 +232,18 @@ namespace Interpeter
 					}
 					else
 					{
-						tokenList->push_back(Token(TOKEN_WORLD,world));
+						for(j = 0; j < keywordsLen; j++)
+						{
+							if(world == keywords[j])
+							{
+								tokenList->push_back(Token(TOKEN_KEYWORD,world));
+								break;
+							}
+							else if(j == keywordsLen)
+							{
+								tokenList->push_back(Token(TOKEN_WORD,world));
+							}
+						}
 						world = "";
 						writeWord = false;
 
