@@ -15,7 +15,7 @@ namespace Interpeter
 	namespace SyntaxChecker
 	{
 
-		class World
+		class Word
 		{
 		public:
 		private:
